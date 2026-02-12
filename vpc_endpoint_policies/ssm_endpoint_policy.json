@@ -1,0 +1,68 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowRequestsByOrgsIdentitiesToOrgsResources",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "*",
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "aws:PrincipalOrgID": "<my-org-id>",
+                    "aws:ResourceOrgID": "<my-org-id>"
+                }
+            }
+        },
+        {
+            "Sid": "AllowRequestsByAWSServicePrincipals",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "*",
+            "Resource": "*",
+            "Condition": {
+                "Bool": {
+                    "aws:PrincipalIsAWSService": "true"
+                }
+            }
+        },
+        {
+            "Sid": "AllowRequestsByOrgsIdentitiesToAWSResources",
+            "Principal": "*",
+            "Action": [
+                "ssm:Describe*",
+                "ssm:List*",
+                "ssm:Get*",
+                "ssm:SendCommand",
+                "ssm:CreateAssociation",
+                "ssm:StartSession",
+                "ssm:StartChangeRequestExecution",
+                "ssm:StartAutomationExecution"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:ssm:<region>::parameter/aws/*",
+                "arn:aws:ssm:<region>::document/*",
+                "arn:aws:ssm:*::automation-definition/*"
+            ],
+            "Condition": {
+                "StringEquals": {
+                    "aws:PrincipalOrgID": "<my-org-id>"
+                }
+            }
+        },
+        {
+            "Sid": "AllowRequestsByOrgsIdentitiesToAnyResources",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "*",
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "aws:PrincipalOrgID": "<my-org-id>",
+                    "aws:PrincipalTag/dp:exclude:resource": "true"
+                }
+            }
+        }
+    ]
+}
