@@ -1,0 +1,154 @@
+{
+   "Version": "2012-10-17",
+   "Statement": [
+      {
+         "Sid": "PreventRAMExternalResourceShare",
+         "Effect": "Deny",
+         "Action": [
+            "ram:CreateResourceShare",
+            "ram:UpdateResourceShare"
+         ],
+         "Resource": "*",
+         "Condition": {
+            "StringNotEqualsIfExists": {
+               "aws:PrincipalTag/dp:exclude:identity": "true"
+            },
+            "Bool": {
+               "ram:RequestedAllowsExternalPrincipals": "true"
+            }
+         }
+      },
+      {
+         "Sid": "PreventExternalResourceShare",
+         "Effect": "Deny",
+         "Action": [
+            "ec2:ModifyImageAttribute",
+            "ec2:ModifyFPGAImageAttribute",
+            "ec2:CreateNetworkInterfacePermission",
+            "ec2:EnableAddressTransfer",
+            "ec2:ModifySnapshotAttribute",
+            "ec2:ModifyVpcEndpointServicePermissions",
+            "ssm:ModifyDocumentPermission",
+            "rds:ModifyDBSnapshotAttribute",
+            "rds:ModifyDBClusterSnapshotAttribute",
+            "redshift:AuthorizeDataShare",
+            "redshift:AuthorizeSnapshotAccess",
+            "redshift:AuthorizeEndpointAccess",
+            "ds:ShareDirectory",
+            "directconnect:CreateDirectConnectGatewayAssociationProposal",
+            "detective:CreateMembers",
+            "lakeformation:GrantPermissions",
+            "lakeformation:BatchGrantPermissions",
+            "appstream:UpdateImagePermissions",
+            "macie2:CreateInvitations",
+            "securityhub:CreateMembers",
+            "securityhub:InviteMembers",
+            "guardduty:CreateMembers",
+            "guardduty:InviteMembers",
+            "auditmanager:StartAssessmentFrameworkShare",
+            "workspaces:UpdateWorkspaceImagePermission",
+            "oam:CreateLink",
+            "servicecatalog:CreatePortfolioShare",
+            "servicecatalog:UpdatePortfolioShare",
+            "config:PutConfigurationAggregator",
+            "config:PutAggregationAuthorization",
+            "fis:CreateTargetAccountConfiguration",
+            "globalaccelerator:CreateCrossAccountAttachment",
+            "cloud9:CreateEnvironmentMembership",
+            "connect:BatchAssociateAnalyticsDataSet",
+            "redshift-serverless:PutResourcePolicy"
+         ],
+         "Resource": "*",
+         "Condition": {
+            "StringNotEqualsIfExists": {
+               "aws:PrincipalTag/dp:exclude:identity": "true"
+            }
+         }
+      },
+      {
+         "Sid": "RestrictKMSGrantsCreationToAWSServices",
+         "Effect": "Deny",
+         "Action": "kms:CreateGrant",
+         "Resource": "*",
+         "Condition": {
+            "BoolIfExists": {
+               "kms:GrantIsForAWSResource": "false",
+               "aws:PrincipalIsAWSService": "false"
+            },
+            "StringNotEqualsIfExists": {
+               "aws:PrincipalTag/dp:exclude:identity": "true"
+            }
+         }
+      },
+      {
+         "Sid": "ProtectActionsNotSupportedByPrimaryDPControls",
+         "Effect": "Deny",
+         "Action": [
+            "ec2:CreateTransitGatewayPeeringAttachment",
+            "ec2:AcceptTransitGatewayPeeringAttachment",
+            "ec2:RejectTransitGatewayPeeringAttachment",
+            "ec2:DeleteTransitGatewayPeeringAttachment",
+            "ec2:CreateVpcPeeringConnection",
+            "ec2:AcceptVpcPeeringConnection",
+            "ec2:RejectVpcPeeringConnection",
+            "ec2:DeleteVpcPeeringConnection",
+            "ec2:CreateVpcEndpoint",
+            "ec2:AcceptVpcEndpointConnections",
+            "ec2:RejectVpcEndpointConnections",
+            "ec2:CopySnapshot",
+            "route53:CreateVPCAssociationAuthorization",
+            "route53:AssociateVPCWithHostedZone",
+            "route53:DisassociateVPCFromHostedZone",
+            "route53:ListHostedZonesByVPC",
+            "route53:DeleteVPCAssociationAuthorization",
+            "macie2:AcceptInvitation",
+            "securityhub:AcceptAdministratorInvitation",
+            "guardduty:AcceptAdministratorInvitation",
+            "auditmanager:UpdateAssessmentFrameworkShare",
+            "es:AcceptInboundConnection",
+            "ds:AcceptSharedDirectory"
+         ],
+         "Resource": "*",
+         "Condition": {
+            "StringNotEqualsIfExists": {
+               "aws:PrincipalTag/dp:exclude:resource": "true"
+            }
+         }
+      },
+      {
+         "Sid": "PreventLambdaFunctionURLAuthNone",
+         "Effect": "Deny",
+         "Action": [
+            "lambda:AddPermission",
+            "lambda:UpdateFunctionUrlConfig",
+            "lambda:CreateFunctionUrlConfig"
+         ],
+         "Resource": "*",
+         "Condition": {
+            "StringNotEqualsIfExists": {
+               "aws:PrincipalTag/dp:exclude:identity": "true"
+            },
+            "StringEquals": {
+               "lambda:FunctionUrlAuthType": "NONE"
+            }
+         }
+      },
+      {
+         "Sid": "ProtectDataPerimeterTags",
+         "Effect": "Deny",
+         "Action": "*",
+         "Resource": "*",
+         "Condition": {
+            "StringNotEqualsIfExists": {
+               "aws:PrincipalTag/team": "admin"
+            },
+            "ForAnyValue:StringLike": {
+               "aws:TagKeys": [
+                  "dp:*",
+                  "team"
+               ]
+            }
+         }
+      }
+   ]
+}
