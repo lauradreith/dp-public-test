@@ -2,6 +2,8 @@
 
 Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved. SPDX-License-Identifier: CC-BY-SA-4.0
 
+PUBLIC to PRIVATE
+using CLI
 This should go back to private
 
 
